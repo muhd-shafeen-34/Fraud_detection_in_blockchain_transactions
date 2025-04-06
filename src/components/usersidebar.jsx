@@ -31,9 +31,7 @@ export default function Sidebar() {
             <li className="inline-block relative">
               {/* <NotificationDropdown /> */}
             </li>
-            <li className="inline-block relative">
-              {/* <UserDropdown /> */}
-            </li>
+            <li className="inline-block relative">{/* <UserDropdown /> */}</li>
           </ul>
           {/* Collapse */}
           <div
@@ -78,7 +76,7 @@ export default function Sidebar() {
             {/* Divider */}
             <hr className="my-4 md:min-w-full" />
             {/* Heading */}
-            
+
             {/* Navigation */}
 
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
@@ -122,7 +120,7 @@ export default function Sidebar() {
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                    Fraud detection
+                  Fraud detection
                 </Link>
               </li>
 
@@ -157,6 +155,12 @@ export default function Sidebar() {
                       : "text-blueGray-700 hover:text-blueGray-500")
                   }
                   to="/auth/login"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    localStorage.clear(); // Clear all localStorage data
+                    alert("You have been logged out successfully"); // Show alert message
+                    window.location.href = "/auth/login"; // Redirect to login page
+                  }}
                 >
                   <i
                     className={
@@ -202,7 +206,7 @@ export default function Sidebar() {
             </ul>
 
             // {/* Divider */}
-             <hr className="my-4 md:min-w-full" />
+            <hr className="my-4 md:min-w-full" />
 
             {/* <ul className="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
               <li className="items-center">

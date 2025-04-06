@@ -31,9 +31,7 @@ export default function Sidebar() {
             <li className="inline-block relative">
               {/* <NotificationDropdown /> */}
             </li>
-            <li className="inline-block relative">
-              {/* <UserDropdown /> */}
-            </li>
+            <li className="inline-block relative">{/* <UserDropdown /> */}</li>
           </ul>
           {/* Collapse */}
           <div
@@ -78,7 +76,7 @@ export default function Sidebar() {
             {/* Divider */}
             <hr className="my-4 md:min-w-full" />
             {/* Heading */}
-            
+
             {/* Navigation */}
 
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
@@ -122,7 +120,7 @@ export default function Sidebar() {
                         : "text-blueGray-300")
                     }
                   ></i>{" "}
-                    Transactions
+                  Transactions
                 </Link>
               </li>
 
@@ -173,7 +171,7 @@ export default function Sidebar() {
 
             {/* Divider */}
             <hr className="my-4 md:min-w-full" />
-            
+
             {/* <h6 className="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
               Auth Layout Pages
             </h6>

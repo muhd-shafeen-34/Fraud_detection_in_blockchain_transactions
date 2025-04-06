@@ -1,50 +1,122 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useState, useEffect} from "react";
 import { Link } from "react-router-dom";
+import { BASE_URL, LOGIN } from "../api/config";
+import axios from 'axios';
+import FadeLoader from "react-spinners/FadeLoader";
+import { ToastContainer, toast } from 'react-toastify';
+import { Slide } from 'react-toastify';
+import { overlayStyles, spinnerStyles } from "../components/style";
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
   const navigate = useNavigate();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [userID, setUserID] = useState('')
 
-  const handleChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    // Get UserID from localStorage
+    const userId = localStorage.getItem('userId');
+    
+    if (userId) {
+      console.log("UserID:", userId);
+      setUserID(userId)
+      window.location.href = '/user/dashboard';
+      // Use userId for API calls or state management
+    }
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Logging in with:", credentials);
-    // TODO: Connect to Django backend for authentication
-    navigate("/user/dashboard"); // Redirect after login
+  const handleLogin = async () => {
+
+    if(email === '' || password === ''){
+      toast.error("Please fill all data", {
+        duration: 1000
+      })
+    } else {
+
+
+      setLoading(true);
+      try {
+          const response = await axios.post(`${BASE_URL}${LOGIN}`, 
+            null, // No request body needed
+            {
+              headers: {
+                  "email": email,
+                  "password": password
+              }
+            }
+          );
+
+          console.log("hereeee", response)
+          if(response.status === 200) {
+              console.log("hereeeee", response)
+              const userData = response.data.data[0]; // Assuming data is in an array
+              const userId = userData.UserID;
+              const userName = userData.UserName;
+            
+              // Store UserID in localStorage
+              localStorage.setItem('userId', userId);
+              localStorage.setItem('userName', userName)
+
+              setEmail('')
+              setPassword('')
+              toast.success('Logine Success', {
+                duration: 1000,
+                onClose: () => {
+                  navigate('/user/dashboard');
+                }
+              });
+
+
+          } else {
+              setLoading(false)
+              toast.error('Invalid Credentials', {
+                  duration: 1000
+              });
+          }
+          
+      } catch (error) {
+          console.error('hereeee',error);
+          toast.error(error.response.data.message, {
+              autoClose: 1000,
+          });
+      } finally {
+          setLoading(false);
+      }
+    }
   };
 
   return (
     
-    // <div className="flex justify-center items-center h-screen bg-gray-100">
-    //   <div className="bg-white p-8 rounded shadow-md w-96">
-    //     <h2 className="text-2xl font-bold mb-6">Login</h2>
-    //     <form onSubmit={handleSubmit} className="space-y-4">
-    //       <input
-    //         type="text"
-    //         name="username"
-    //         placeholder="Username"
-    //         value={credentials.username}
-    //         onChange={handleChange}
-    //         className="w-full p-2 border rounded"
-    //       />
-    //       <input
-    //         type="password"
-    //         name="password"
-    //         placeholder="Password"
-    //         value={credentials.password}
-    //         onChange={handleChange}
-    //         className="w-full p-2 border rounded"
-    //       />
-    //       <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Login</button>
-    //     </form>
-    //   </div>
-    // </div>
-
     <div className="container mx-auto px-4 h-full">
+        <ToastContainer
+          position="top-center"
+          autoClose={1000}
+          limit={1}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Slide} // Corrected prop assignment
+        />
+
+        {loading && (
+            <div style={overlayStyles}>
+                <FadeLoader
+                    color={"#123abc"}
+                    loading={loading}
+                    cssOverride={spinnerStyles}
+                    size={100}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                />
+            </div>
+        )}
         <div className="flex content-center items-center justify-center h-full">
           <div className="w-full lg:w-4/12 px-4">
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
@@ -96,6 +168,7 @@ function Login() {
                       type="email"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Email"
+                      onChange={e => setEmail(e.target.value)}
                     />
                   </div>
 
@@ -110,6 +183,7 @@ function Login() {
                       type="password"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Password"
+                      onChange={e => setPassword(e.target.value)}
                     />
                   </div>
                   <div>
@@ -130,6 +204,7 @@ function Login() {
                     
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"
+                      onClick={handleLogin}
                     >
                       
                       Sign In
