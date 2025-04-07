@@ -73,7 +73,7 @@ export default function CardTable({ color }) {
             <table className="items-center w-full bg-transparent border-collapse">
               <thead>
                 <tr>
-                  <th
+                  {/* <th
                     className={
                       "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
                       (color === "light"
@@ -82,7 +82,7 @@ export default function CardTable({ color }) {
                     }
                   >
                     User ID
-                  </th>
+                  </th> */}
                   <th
                     className={
                       "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
@@ -137,9 +137,9 @@ export default function CardTable({ color }) {
                 {users.length > 0 ? (
                   users.map((user) => (
                     <tr key={user.UserID}>
-                      <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+                      {/* <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
                         {user.UserID}
-                      </th>
+                      </th> */}
                       <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                         {user.UserName || "Not specified"}
                       </td>

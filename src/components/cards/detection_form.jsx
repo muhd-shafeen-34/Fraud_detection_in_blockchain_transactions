@@ -109,6 +109,7 @@ export default function TransactionForm({ color }) {
 
         toast.success("Transaction submitted successfully!");
       }
+      window.location.reload();
     } catch (error) {
       console.error("Error submitting transaction:", error);
       toast.error("Failed to submit transaction");

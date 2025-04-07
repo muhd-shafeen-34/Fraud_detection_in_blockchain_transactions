@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL, REGISTER } from "../api/config";
 import axios from "axios";
 import FadeLoader from "react-spinners/FadeLoader";
-import { ToastContainer, toast } from "react-toastify";
-import { Slide } from "react-toastify";
+import { ToastContainer, toast, Slide } from "react-toastify";
 import { overlayStyles, spinnerStyles } from "../components/style";
-import { useNavigate } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 export default function Register() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+
   useEffect(() => {
     // Get UserID from localStorage
     const userId = localStorage.getItem("userId");
@@ -20,22 +25,28 @@ export default function Register() {
     }
   }, []);
 
-  const navigate = useNavigate();
-
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  // New states for image handling
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  // Define validation schema with Yup
+  const RegisterSchema = Yup.object().shape({
+    username: Yup.string()
+      .min(3, "Username must be at least 3 characters")
+      .required("Username is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+    agreeTerms: Yup.boolean()
+      .oneOf([true], "You must accept the privacy policy")
+      .required("You must accept the privacy policy"),
+  });
 
   // Handle image selection
-  const handleImageChange = (e) => {
+  const handleImageChange = (e, setFieldValue) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setSelectedImage(file);
+      setFieldValue("image", file);
 
       // Create image preview
       const reader = new FileReader();
@@ -73,14 +84,7 @@ export default function Register() {
     }
   };
 
-  const handleRegister = async () => {
-    if (username === "" || email === "" || password === "") {
-      toast.error("Please fill all data", {
-        duration: 1000,
-      });
-      return;
-    }
-
+  const handleSubmit = async (values, { resetForm }) => {
     setLoading(true);
     try {
       // First upload the image if selected
@@ -97,9 +101,9 @@ export default function Register() {
       const response = await axios.post(
         `${BASE_URL}${REGISTER}`,
         {
-          userName: username,
-          email: email,
-          password: password,
+          userName: values.username,
+          email: values.email,
+          password: values.password,
           imageUrl: uploadedImageUrl, // Include the image URL in registration data
         },
         {
@@ -111,9 +115,7 @@ export default function Register() {
 
       if (response.status === 200) {
         console.log("Registration successful", response);
-        setEmail("");
-        setUsername("");
-        setPassword("");
+        resetForm();
         setSelectedImage(null);
         setImagePreview("");
 
@@ -179,113 +181,147 @@ export default function Register() {
                 <div className="text-blueGray-400 text-center mb-3 font-bold">
                   <small>Sign up by filling details</small>
                 </div>
-                <form>
-                  {/* Profile Image Upload Section */}
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="profile-image"
-                    >
-                      Profile Image
-                    </label>
-                    <div className="flex flex-col items-center">
-                      {imagePreview && (
-                        <div className="mb-3">
-                          <img
-                            src={imagePreview}
-                            alt="Profile Preview"
-                            className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+
+                <Formik
+                  initialValues={{
+                    username: "",
+                    email: "",
+                    password: "",
+                    image: null,
+                    agreeTerms: false,
+                  }}
+                  validationSchema={RegisterSchema}
+                  onSubmit={handleSubmit}
+                >
+                  {({ errors, touched, setFieldValue }) => (
+                    <Form>
+                      {/* Profile Image Upload Section */}
+                      <div className="relative w-full mb-3">
+                        <label
+                          className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                          htmlFor="profile-image"
+                        >
+                          Profile Image
+                        </label>
+                        <div className="flex flex-col items-center">
+                          {imagePreview && (
+                            <div className="mb-3">
+                              <img
+                                src={imagePreview}
+                                alt="Profile Preview"
+                                className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                              />
+                            </div>
+                          )}
+                          <input
+                            type="file"
+                            id="profile-image"
+                            name="image"
+                            accept="image/*"
+                            className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                            onChange={(e) =>
+                              handleImageChange(e, setFieldValue)
+                            }
                           />
                         </div>
-                      )}
-                      <input
-                        type="file"
-                        id="profile-image"
-                        accept="image/*"
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        onChange={handleImageChange}
-                      />
-                    </div>
-                  </div>
+                      </div>
 
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Name"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="inline-flex items-center cursor-pointer">
-                      <input
-                        id="customCheckLogin"
-                        type="checkbox"
-                        className="form-checkbox border-0 rounded text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150"
-                      />
-                      <span className="ml-2 text-sm font-semibold text-blueGray-600">
-                        I agree with the{" "}
-                        <a
-                          href="#pablo"
-                          className="text-lightBlue-500"
-                          onClick={(e) => e.preventDefault()}
+                      <div className="relative w-full mb-3">
+                        <label
+                          className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                          htmlFor="username"
                         >
-                          Privacy Policy
-                        </a>
-                      </span>
-                    </label>
-                  </div>
+                          Name
+                        </label>
+                        <Field
+                          name="username"
+                          type="text"
+                          className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                          placeholder="Name"
+                        />
+                        <ErrorMessage
+                          name="username"
+                          component="div"
+                          className="text-red-500 text-xs mt-1"
+                        />
+                      </div>
 
-                  <div className="text-center mt-6">
-                    <button
-                      className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"
-                      onClick={handleRegister}
-                    >
-                      Create Account
-                    </button>
-                  </div>
-                </form>
+                      <div className="relative w-full mb-3">
+                        <label
+                          className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                          htmlFor="email"
+                        >
+                          Email
+                        </label>
+                        <Field
+                          name="email"
+                          type="email"
+                          className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                          placeholder="Email"
+                        />
+                        <ErrorMessage
+                          name="email"
+                          component="div"
+                          className="text-red-500 text-xs mt-1"
+                        />
+                      </div>
+
+                      <div className="relative w-full mb-3">
+                        <label
+                          className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                          htmlFor="password"
+                        >
+                          Password
+                        </label>
+                        <Field
+                          name="password"
+                          type="password"
+                          className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                          placeholder="Password"
+                        />
+                        <ErrorMessage
+                          name="password"
+                          component="div"
+                          className="text-red-500 text-xs mt-1"
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="inline-flex items-center cursor-pointer">
+                          <Field
+                            name="agreeTerms"
+                            type="checkbox"
+                            className="form-checkbox border-0 rounded text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150"
+                          />
+                          <span className="ml-2 text-sm font-semibold text-blueGray-600">
+                            I agree with the{" "}
+                            <a
+                              href="#pablo"
+                              className="text-lightBlue-500"
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              Privacy Policy
+                            </a>
+                          </span>
+                        </label>
+                        <ErrorMessage
+                          name="agreeTerms"
+                          component="div"
+                          className="text-red-500 text-xs mt-1"
+                        />
+                      </div>
+
+                      <div className="text-center mt-6">
+                        <button
+                          className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                          type="submit"
+                        >
+                          Create Account
+                        </button>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
               </div>
             </div>
 

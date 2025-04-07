@@ -141,16 +141,8 @@ export default function CardTable({ color }) {
                       : "bg-lightBlue-800 text-lightBlue-300 border-lightBlue-700")
                   }
                 >
-                  Details
+                  Classification
                 </th>
-                <th
-                  className={
-                    "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                    (color === "light"
-                      ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                      : "bg-lightBlue-800 text-lightBlue-300 border-lightBlue-700")
-                  }
-                ></th>
               </tr>
             </thead>
             <tbody>
@@ -199,33 +191,8 @@ export default function CardTable({ color }) {
                       </div>
                     </td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      <div className="flex items-center">
-                        <span className="mr-2">
-                          {transaction.Confirmations}/
-                          {transaction.TotalConfirmations}
-                        </span>
-                        <div className="relative w-full">
-                          <div className="overflow-hidden h-2 text-xs flex rounded bg-emerald-200">
-                            <div
-                              style={{
-                                width: `${
-                                  (transaction.Confirmations /
-                                    transaction.TotalConfirmations) *
-                                  100
-                                }%`,
-                              }}
-                              className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-xs text-blueGray-400">
-                        Block #{transaction.BlockNumber}
-                      </div>
+                      {transaction.Classification}
                     </td>
-                    {/* <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right">
-                      <TableDropdown />
-                    </td> */}
                   </tr>
                 ))
               ) : (
