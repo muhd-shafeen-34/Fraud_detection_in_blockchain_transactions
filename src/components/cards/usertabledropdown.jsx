@@ -1,20 +1,52 @@
 import React from "react";
 import { createPopper } from "@popperjs/core";
+import { BASE_URL } from "../../api/config";
 
-const NotificationDropdown = () => {
+const NotificationDropdown = ({ userId }) => {
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
   const popoverDropdownRef = React.createRef();
+
   const openDropdownPopover = () => {
     createPopper(btnDropdownRef.current, popoverDropdownRef.current, {
       placement: "left-start",
     });
     setDropdownPopoverShow(true);
   };
+
   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}api/FraudTransaction/delete-user`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            userId: userId, // Passing userId in the header
+          },
+        }
+      );
+      window.location.reload();
+      if (response.ok) {
+        console.log("User deleted successfully");
+        // You may want to add a callback to refresh the user list or navigate elsewhere
+        // onUserDeleted(); // Uncomment and implement if needed
+      } else {
+        console.error("Failed to delete user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+
+    // Close the dropdown after delete action
+    closeDropdownPopover();
+  };
+
   return (
     <>
       <a
@@ -35,33 +67,14 @@ const NotificationDropdown = () => {
           "bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg min-w-48"
         }
       >
-        <a
-          href="#pablo"
+        <button
           className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+            "text-sm py-2 hover:bg-gray-100 font-medium px-4 block w-full whitespace-nowrap bg-transparent text-blueGray-700"
           }
-          onClick={(e) => e.preventDefault()}
+          onClick={handleDelete}
         >
-          Action
-        </a>
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Another action
-        </a>
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Something else here
-        </a>
+          Delete
+        </button>
       </div>
     </>
   );

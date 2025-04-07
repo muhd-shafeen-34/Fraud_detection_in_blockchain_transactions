@@ -146,7 +146,12 @@ export default function Sidebar() {
                 </Link>
               </li>
 
-              <li className="items-center">
+              <li
+                onClick={() => {
+                  localStorage.clear("isAdmin");
+                }}
+                className="items-center"
+              >
                 <Link
                   className={
                     "text-xs uppercase py-3 font-bold block " +

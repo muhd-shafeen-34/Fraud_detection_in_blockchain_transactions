@@ -72,7 +72,7 @@ export default function HeaderStats() {
               </div>
               <div className="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <CardStats
-                  statSubtitle="NEW USERS"
+                  statSubtitle="TOTAL USERS"
                   statTitle={dashboardData.NewUsersThisWeek}
                   statArrow="up"
                   statPercent="N/A"
@@ -84,7 +84,7 @@ export default function HeaderStats() {
               </div>
               <div className="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <CardStats
-                  statSubtitle="SALES"
+                  statSubtitle="LEGITIMATE TRANSACTIONS"
                   statTitle={dashboardData.SalesToday}
                   statArrow={
                     dashboardData.SalesChangePercent >= 0 ? "up" : "down"
@@ -104,7 +104,7 @@ export default function HeaderStats() {
               </div>
               <div className="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <CardStats
-                  statSubtitle="PERFORMANCE"
+                  statSubtitle=" PERFORMANCE"
                   statTitle={`${dashboardData.ConfirmationRate}%`}
                   statArrow="up"
                   statPercent="N/A"
