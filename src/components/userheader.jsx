@@ -98,7 +98,7 @@ export default function HeaderStats() {
               <div className="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <CardStats
                   statSubtitle="Fraud"
-                  statTitle={dashboardData.SalesToday}
+                  statTitle={dashboardData.FraudTransaction}
                   statArrow={
                     dashboardData.SalesChangePercent >= 0 ? "up" : "down"
                   }

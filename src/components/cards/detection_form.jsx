@@ -86,30 +86,13 @@ export default function TransactionForm({ color }) {
       // const fraudDetectionResponse = await axios.post('YOUR_FRAUD_DETECTION_API', payload);
 
       // Simulating fraud detection API response
-      const fraudDetectionResponse = {
-        data: {
-          isSucess: true,
-          message: "Success",
-          data: {
-            _classification: "Legitimate",
-          },
-        },
-      };
 
       if (response.status === 200) {
-        if (
-          fraudDetectionResponse.data.isSucess &&
-          fraudDetectionResponse.data.data._classification
-        ) {
-          setFraudDetectionResult(
-            fraudDetectionResponse.data.data._classification
-          );
-          setShowModal(true);
-        }
+        setFraudDetectionResult(response.data.data._classification);
+        setShowModal(true);
 
         toast.success("Transaction submitted successfully!");
       }
-      window.location.reload();
     } catch (error) {
       console.error("Error submitting transaction:", error);
       toast.error("Failed to submit transaction");
@@ -119,6 +102,7 @@ export default function TransactionForm({ color }) {
   };
 
   const closeModal = () => {
+    window.location.reload();
     setShowModal(false);
   };
 
