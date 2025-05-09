@@ -114,6 +114,8 @@ import Userdashboard from "./pages/user/userdashboard";
 import Detection from "./pages/user/detection"
 import Profile from "./pages/user/profile.jsx"
 import Usertransactions from "./pages/user/usertransactions.jsx"
+import Feedback from "./views/user/Feedback.jsx";
+import AdminFeedback from "./views/admin/AdminFeedback.jsx";
 
 function App() {
   return (
@@ -132,6 +134,7 @@ function App() {
           <Route path="dashboard" element={<Admindashboard />} />
           <Route path="transactions" element={<Admintransactions />} />
           <Route path="users" element={<Users />} />
+          <Route path="feedback" element={<AdminFeedback />} />
         </Route>
         <Route path="/user" element={<User />}>
         <Route index element={<Navigate to="dashboard" replace />} />
@@ -139,6 +142,7 @@ function App() {
           <Route path="detection" element={<Detection />} />
           <Route path="transactions" element={<Usertransactions />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="feedback" element={<Feedback />} />
         </Route>
 
         {/* Redirect all unknown paths */}

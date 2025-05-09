@@ -23,3 +23,5 @@ export const REGISTER = 'api/FraudTransaction/post-user';
 export const LOGIN = 'api/FraudTransaction/post-user-login';
 export const POST_TRANS = 'api/FraudTransaction/postTransaction';
 export const GET_TRANS = 'api/FraudTransaction/GETTransaction';
+export const SUBMIT_FEEDBACK = 'api/FraudTransaction/submit-feedback';
+export const GET_FEEDBACKS = 'api/FraudTransaction/get-user-feedbacks';
